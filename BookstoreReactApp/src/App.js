@@ -5,11 +5,12 @@ import _ from 'lodash';
 import cryptojs from 'crypto-js';
 // import fs from 'fs';
 
-var GeektABI = [{"constant":true,"inputs":[],"name":"getUsers","outputs":[{"name":"","type":"address[]"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"handle","type":"string"},{"name":"city","type":"bytes32"},{"name":"state","type":"bytes32"},{"name":"country","type":"bytes32"}],"name":"registerNewUser","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"SHA256notaryHash","type":"bytes32"}],"name":"getImage","outputs":[{"name":"","type":"string"},{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"userAddress","type":"address"}],"name":"getUser","outputs":[{"name":"","type":"string"},{"name":"","type":"bytes32"},{"name":"","type":"bytes32"},{"name":"","type":"bytes32"},{"name":"","type":"bytes32[]"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"getAllImages","outputs":[{"name":"","type":"bytes32[]"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"imageURL","type":"string"},{"name":"SHA256notaryHash","type":"bytes32"}],"name":"addImageToUser","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"badUser","type":"address"}],"name":"removeUser","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"badImage","type":"bytes32"}],"name":"removeImage","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"userAddress","type":"address"}],"name":"getUserImages","outputs":[{"name":"","type":"bytes32[]"}],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"}];
-//var GeektAddress = '0xe70ff0fa937a25d5dd4172318fa1593baba5a027';  // localhost testnet address
-var GeektAddress = '0x6f283ca1ea2a305662e25437f65aa9a52ae31c90';    // mainnet address!
+var BookstoreABI = [{"constant":true,"inputs":[],"name":"getUsers","outputs":[{"name":"","type":"address[]"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"handle","type":"string"},{"name":"city","type":"bytes32"},{"name":"state","type":"bytes32"},{"name":"country","type":"bytes32"}],"name":"registerNewUser","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"SHA256notaryHash","type":"bytes32"}],"name":"getImage","outputs":[{"name":"","type":"string"},{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"userAddress","type":"address"}],"name":"getUser","outputs":[{"name":"","type":"string"},{"name":"","type":"bytes32"},{"name":"","type":"bytes32"},{"name":"","type":"bytes32"},{"name":"","type":"bytes32[]"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"getAllImages","outputs":[{"name":"","type":"bytes32[]"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"imageURL","type":"string"},{"name":"SHA256notaryHash","type":"bytes32"}],"name":"addImageToUser","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"badUser","type":"address"}],"name":"removeUser","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"badImage","type":"bytes32"}],"name":"removeImage","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"},{"constant":true,"inputs":[{"name":"userAddress","type":"address"}],"name":"getUserImages","outputs":[{"name":"","type":"bytes32[]"}],"payable":false,"type":"function"},{"inputs":[],"payable":false,"type":"constructor"}];
 
-var GeektContract = {};
+var BookstoreAddress = '0xe70ff0fa937a25d5dd4172318fa1593baba5a027';  // localhost testnet address
+//var BookstoreAddress = '0x6f283ca1ea2a305662e25437f65aa9a52ae31c90';    // mainnet address!
+
+var BookstoreContract = {};
 var web3 = {};
 var alreadyLoaded = false;
 var defaultAccount = 0;
@@ -62,12 +63,12 @@ class App extends Component {
   getInfo(){
     var outerThis = this;
     if(typeof web3.eth !== 'undefined'){
-      GeektContract = web3.eth.contract(GeektABI).at(GeektAddress);
+      BookstoreContract = web3.eth.contract(BookstoreABI).at(BookstoreAddress);
       if(typeof web3.eth.accounts !== 'undefined') {
         if(typeof web3.eth.accounts[0] !== 'undefined'){
           defaultAccount = web3.eth.accounts[0];
           console.debug("saw default eth account: " + web3.eth.accounts[0]);
-          GeektContract.getUsers(function(err,usersResult){
+          BookstoreContract.getUsers(function(err,usersResult){
             if(err) {
               outerThis.setState({
                 users: {}
@@ -79,7 +80,7 @@ class App extends Component {
               var foundDefault = false;
               _.map(usersResult,function(key){
                 //console.log("saw users key : " + key);
-                GeektContract.getUser(key,function(err,userResult){
+                BookstoreContract.getUser(key,function(err,userResult){
                   //console.log("saw result: "+ JSON.stringify(userResult));
                   //console.log("user: handle(" + userResult[0] + "), addr("+ key +")");
                   usersList[userResult[0]] = {
@@ -151,7 +152,7 @@ class App extends Component {
             console.log('This is an unknown/localhost network: ' + tempNetId);
         }
         // console.log("contract: ");
-        // console.debug(GeektContract);
+        // console.debug(BookstoreContract);
         outerThis.setState({
           thisNetId: tempNetId
         });
@@ -266,13 +267,13 @@ class App extends Component {
     console.log("refreshing user : " + key);
     var outerThis = this;
     if(typeof web3.eth !== 'undefined'){
-      GeektContract = web3.eth.contract(GeektABI).at(GeektAddress);
+      BookstoreContract = web3.eth.contract(BookstoreABI).at(BookstoreAddress);
       if(typeof web3.eth.accounts !== 'undefined') {
         if(typeof web3.eth.accounts[0] !== 'undefined'){
           defaultAccount = web3.eth.accounts[0];
           //console.log("saw default eth account: " + defaultAccount);
           var usersList = outerThis.state.users;
-          GeektContract.getUser(key,function(err,userResult){
+          BookstoreContract.getUser(key,function(err,userResult){
             //console.log("saw result: "+ JSON.stringify(userResult));
             //console.log("user: handle(" + userResult[0] + "), addr("+ key +")");
             usersList[userResult[0]] = {
@@ -282,7 +283,7 @@ class App extends Component {
               "Country":web3.toAscii(userResult[3]).replace(/\u0000/g,''),
               "myImages":userResult[4]
             };
-            GeektContract.getUserImages(key,function(err,imagesResult){
+            BookstoreContract.getUserImages(key,function(err,imagesResult){
               if(err) {
                 console.log("getUserImages saw err for user " + key + ": " + err)
               } else {
@@ -315,7 +316,7 @@ class App extends Component {
                 var selectHighestTimestamp = 0;
                 var selectLatestImage = ''
                 _.map(imagesResult,function(imageHash){
-                  GeektContract.getImage(imageHash,function(err,imageResult){
+                  BookstoreContract.getImage(imageHash,function(err,imageResult){
                     if(key === defaultAccount){ // fill in myUserImages)
                       var newMyImages = outerThis.state.myImages;
                       newMyImages[imageHash]={}
@@ -530,13 +531,13 @@ class App extends Component {
     console.log("adding image to user now!");
     console.log("imageURL : " + outerThis.state.newImageURL + ", sha: 0x"+ outerThis.state.newImageSHA);
     try {
-      GeektContract.addImageToUser.estimateGas(outerThis.state.newImageURL,"0x"+outerThis.state.newImageSHA,{from:defaultAccount}, function(err, result){
+      BookstoreContract.addImageToUser.estimateGas(outerThis.state.newImageURL,"0x"+outerThis.state.newImageSHA,{from:defaultAccount}, function(err, result){
         if(err) {
           throw err;
         } else {
           console.log("addNewImage gas estimate : " + result);
           var myGasNum = result;
-          GeektContract.addImageToUser.sendTransaction(outerThis.state.newImageURL,"0x"+outerThis.state.newImageSHA,{from:defaultAccount, gas: myGasNum}, function(err, result){
+          BookstoreContract.addImageToUser.sendTransaction(outerThis.state.newImageURL,"0x"+outerThis.state.newImageSHA,{from:defaultAccount, gas: myGasNum}, function(err, result){
             if(err) {
               throw err;
             } else {
@@ -556,13 +557,13 @@ class App extends Component {
     console.log("signing GuestBook now!");
     console.log(outerThis.state.defaultHandle,outerThis.state.defaultCity,outerThis.state.defaultState,outerThis.state.defaultCountry);
     try {
-      GeektContract.registerNewUser.estimateGas(outerThis.state.defaultHandle,outerThis.state.defaultCity,outerThis.state.defaultState,outerThis.state.defaultCountry,{from:defaultAccount}, function(err, result){
+      BookstoreContract.registerNewUser.estimateGas(outerThis.state.defaultHandle,outerThis.state.defaultCity,outerThis.state.defaultState,outerThis.state.defaultCountry,{from:defaultAccount}, function(err, result){
         if(err) {
           throw err;
         } else {
           console.log("registerNewUser gas estimate : " + result);
           var myGasNum = result;
-          GeektContract.registerNewUser.sendTransaction(outerThis.state.defaultHandle,outerThis.state.defaultCity,outerThis.state.defaultState,outerThis.state.defaultCountry,{from:defaultAccount, gas: myGasNum}, function(err, result){
+          BookstoreContract.registerNewUser.sendTransaction(outerThis.state.defaultHandle,outerThis.state.defaultCity,outerThis.state.defaultState,outerThis.state.defaultCountry,{from:defaultAccount, gas: myGasNum}, function(err, result){
             if(err) {
               throw err;
             } else {
@@ -836,29 +837,6 @@ class App extends Component {
         <hr />
         <span className="app-outro">
           <table style={{"minWidth":"70%","textAlign":"left","margin":"auto"}}>
-            <tbody>
-              <tr><td style={{"textAlign":"center"}}>
-                <span style={{"fontSize":"15px","fontWeight":"bold"}}>
-                  Thank you for visiting <a href="http://www.enledger.io/" target="_blank">EnLedger.io</a> and the <a href="https://github.com/Tectract/ethereum-demo-tools" target="_blank">Ethereum Guestbook Demo</a>!<br /><br />
-                </span>
-              </td></tr>
-              <tr><td>
-                <span style={{"fontSize":"13px","fontWeight":"bold"}}>
-                  To use this tool you&#39;ll need a connection to an Ethereum network, via:<br />
-                  <span style={{"padding":"0px 0px 0px 6px"}}>
-                    1. start <a href="https://github.com/ethereum/go-ethereum" target="_blank">Ethereum server</a> or <a href="https://github.com/ethereumjs/testrpc" target="_blank">testrpc server</a> running at localhost:8545, then reload this page
-                  </span><br /><span style={{"padding":"0px 0px 0px 6px"}}>
-                    2. Install <a href="https://metamask.io/" target="_blank">Metamask plugin</a>, connect to network of your choice (including Mainnet!), then reload this page
-                  </span><br />
-                  <u>notes</u>: for localhost testrpc (testnet), you don&#39;t need Metamask running, see <a href="https://github.com/Tectract/ethereum-demo-tools/blob/master/README.md" target="_blank">the README</a> for metamask signing locally & ethereumjs-testrpc notes<br />
-                  <u>notes</u>: sometimes you may need to reload once or twice for it to see your web3.eth.accounts[0] account
-                  <br /><br />
-                  Author: <a href="http://www.enledger.io/blog/our-team/" target="_blank">Ryan Molecke</a>, sponsored by <a href="http://blockgeeks.com/" target="_blank">BlockGeeks.com</a>!<br />
-                  Issues, comments, suggestions? Please use <a href="https://github.com/Tectract/ethereum-demo-tools/issues" target="_blank">this page</a> to start an issue ticket, do not email Ryan for help directly :)<br />
-                  Also check out <a href="http://www.enledger.io/EthDeployer/" target="_blank">Tectract&#39;s EthDeployer!</a>
-                </span>
-              </td></tr>
-            </tbody>
           </table>
         </span>
         <br /><br />
