@@ -1,5 +1,5 @@
-var Geekt = artifacts.require("Geekt.sol");
+var Bookstore = artifacts.require("Bookstore.sol");
 
 module.exports = function(deployer) {
-  deployer.deploy(Geekt);
+  deployer.deploy(Bookstore);
 };

@@ -28,10 +28,10 @@ contract('Bookstore', function(accounts) {                            	// initia
 		 	
 		 	assert.equal(numusers,1, "One user should have been created");
 		 	assert.equal(user0,accounts[1], "User should be "+accounts[1]);
-		 	return store.userExists.call(accounts[1]);
+		 	return store.userAddressExists.call(accounts[1]);
 		 }).then(function (result) {
 		 	assert.ok(result, "User "+accounts[1]+" should have been created");
-		 	return store.userExists.call(accounts[2]);
+		 	return store.userAddressExists.call(accounts[2]);
 		 }).then(function (result) {
 		 	assert.ok(!result, "User "+accounts[2]+" should not have been created");
 		 	
